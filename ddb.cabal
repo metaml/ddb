@@ -15,8 +15,7 @@ library
   hs-source-dirs:     src
   ghc-options:        -O2 -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-type-defaults -flate-specialise -fspecialise-aggressively
   default-language:   Haskell2010
-  default-extensions: AllowAmbiguousTypes
-                    , BangPatterns
+  default-extensions: BangPatterns
                     , BlockArguments
                     , DataKinds
                     , DeriveAnyClass
@@ -29,14 +28,12 @@ library
                     , GeneralizedNewtypeDeriving
                     , LambdaCase
                     , MultiParamTypeClasses
-                    , NoMonomorphismRestriction
                     , OverloadedLabels
                     , OverloadedStrings
                     , PolyKinds
                     , RankNTypes
                     , ScopedTypeVariables
                     , StandaloneDeriving
-                    , TemplateHaskell
                     , TypeApplications
                     , TypeOperators
                     , TypeFamilies
@@ -61,11 +58,7 @@ library
                     , http-types
                     , polysemy
                     , polysemy-plugin
-                    , postgresql-simple
                     , postgresql-simple-migration
-                    , selda
-                    , selda-json
-                    , selda-postgresql
                     , servant
                     , servant-client
                     , servant-client-core
@@ -73,7 +66,6 @@ library
                     , text
                     , text-conversions
                     , time
-                    , transformers-either
                     , unordered-containers
                     , uuid
 

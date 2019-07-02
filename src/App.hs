@@ -13,14 +13,8 @@ import Database.Beam.Postgres
 import Db.Db
 import Db.Log
 
-data LogLine = LogLine { _line :: Text }
-  deriving (Eq, Generic, Show)
-
-instance ToJSON LogLine where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = drop 1 }
-
-instance FromJSON LogLine where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+data Logs = Logs [Text]
+  deriving (Eq, Generic, Show, ToJSON, FromJSON)
 
 ddb :: IO ()
 ddb = do
@@ -37,8 +31,8 @@ ddb = do
       insertExpressions [LogT { logId        = default_
                               , logGuid      = default_
                               , logSource    = val_ "source"
-                              , logInput     = val_ $ toJSON . LogLine $ "’Twas brillig, and the slithy toves"
-                              , logOutput    = val_ $ toJSON . LogLine $ "Did gyre and gimble in the wabe:"
+                              , logInput     = val_ . toJSON . Logs $ ["’Twas brillig, and the slithy toves"]
+                              , logOutput    = val_ . toJSON . Logs $ ["Did gyre and gimble in the wabe:"]
                               , logCreatedAt = default_
                               , logUpdatedAt = default_
                               }
