@@ -27,6 +27,4 @@ ddb = do
     runInsert $ insert (log logDb) $
       insertValues [Log 1 (Log' gid "source" emptyObject emptyObject) utc utc]
 
-    return $ liftIO $ print logs
-
   return ()
