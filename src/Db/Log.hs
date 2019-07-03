@@ -7,16 +7,26 @@ import Data.Time
 import Data.UUID
 import Database.Beam
 
-data LogT f = LogT { logId        :: C f Int64
-                   , logGuid      :: C f UUID
-                   , logSource    :: C f Text
-                   , logInput     :: C f Value
-                   , logOutput    :: C f Value
-                   , logCreatedAt :: C f UTCTime
-                   , logUpdatedAt :: C f UTCTime
-                   } deriving (Beamable, Generic)
+
+type Log' = Log'T Identity
+
+data Log'T f = Log' { logGuid      :: C f UUID
+                    , logSource    :: C f Text
+                    , logInput     :: C f Value
+                    , logOutput    :: C f Value
+                    } deriving (Beamable, Generic)
+
+deriving instance Eq Log'
+deriving instance Show Log'
 
 type Log = LogT Identity
+
+data LogT f = Log { logId        :: C f Int64
+                  , log'         :: Log'T f
+                  , logCreatedAt :: C f UTCTime
+                  , logUpdatedAt :: C f UTCTime
+                  } deriving (Beamable, Generic)
+
 deriving instance Eq Log
 deriving instance Show Log
 

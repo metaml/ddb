@@ -24,18 +24,9 @@ ddb = do
     gid <- liftIO nextRandom
     utc <- liftIO getCurrentTime
 
-    runInsert $ insert (logDb ^. field @"log") $
-      insertValues [LogT 1 gid "source" emptyObject emptyObject utc utc]
+    runInsert $ insert (log logDb) $
+      insertValues [Log 1 (Log' gid "source" emptyObject emptyObject) utc utc]
 
-    runInsert $ insert (logDb ^. field @"log") $
-      insertExpressions [LogT { logId        = default_
-                              , logGuid      = default_
-                              , logSource    = val_ "source"
-                              , logInput     = val_ . toJSON . Logs $ ["’Twas brillig, and the slithy toves"]
-                              , logOutput    = val_ . toJSON . Logs $ ["Did gyre and gimble in the wabe:"]
-                              , logCreatedAt = default_
-                              , logUpdatedAt = default_
-                              }
-                        ]
+    return $ liftIO $ print logs
 
   return ()
