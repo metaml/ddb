@@ -6,7 +6,6 @@ import Data.Text
 import Data.Time
 import Data.UUID
 import Database.Beam
-import Database.PostgreSQL.Simple (Connection)
 
 data Log'T f = Log' { logGuid      :: C f UUID
                     , logSource    :: C f Text
@@ -40,3 +39,14 @@ instance Table LogT where
    data PrimaryKey LogT f = LogId ( C f Int64
                                   ) deriving (Beamable, Generic)
    primaryKey = LogId . logId
+
+-- @todo: what does the following do?
+-- data MyAppFields table f = MyAppFields { createdAt :: Columnar f UTCTime
+--                                        , updatedAt :: Columnar f UTCTime
+--                                        , payload   :: table f
+--                                        , myAppId   :: Columnar f UUID
+--                                        } deriving (Generic, Beamable)
+
+-- instance Beamable table => Table (MyAppFields table) where
+--   data PrimaryKey (MyAppFields table) f = MyAppKey (Columnar f UUID) deriving (Generic, Beamable)
+--   primaryKey = MyAppKey <$> myAppId
