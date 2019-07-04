@@ -6,9 +6,7 @@ import Data.Text
 import Data.Time
 import Data.UUID
 import Database.Beam
-
-
-type Log' = Log'T Identity
+import Database.PostgreSQL.Simple (Connection)
 
 data Log'T f = Log' { logGuid      :: C f UUID
                     , logSource    :: C f Text
@@ -16,10 +14,11 @@ data Log'T f = Log' { logGuid      :: C f UUID
                     , logOutput    :: C f Value
                     } deriving (Beamable, Generic)
 
+type Log' = Log'T Identity
 deriving instance Eq Log'
 deriving instance Show Log'
-
-type Log = LogT Identity
+deriving instance ToJSON Log'
+deriving instance FromJSON Log'
 
 data LogT f = Log { logId        :: C f Int64
                   , log'         :: Log'T f
@@ -27,8 +26,11 @@ data LogT f = Log { logId        :: C f Int64
                   , logUpdatedAt :: C f UTCTime
                   } deriving (Beamable, Generic)
 
+type Log = LogT Identity
 deriving instance Eq Log
 deriving instance Show Log
+deriving instance ToJSON Log
+deriving instance FromJSON Log
 
 type LogId = PrimaryKey LogT Identity
 deriving instance Eq LogId

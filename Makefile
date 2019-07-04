@@ -31,7 +31,7 @@ lint: ## lint
 clean: ## clean
 	cabal new-clean
 
-run: ## run main, default: BIN=lamha
+run: ## run main, default: BIN=ddb
 	cabal new-run ${BIN}
 
 repl: ## repl
