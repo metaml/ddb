@@ -5,13 +5,13 @@ export PATH = .:${HOME}/.cabal/bin:${HOME}/.ghcup/bin:/usr/local/bin:/usr/bin:/b
 
 BIN ?= ddb
 
+NEW_BUILD_OPT ?= --disable-documentation
+
 dev: clean ## build continuously
-	@cabal new-build 2>&1 | source-highlight --src-lang=haskell --out-format=esc
-	@fswatcher --path . \
-	   	   --include "\.hs$$|\.cabal$$" \
-		   --throttle 31 \
-		   cabal new-build 2>&1 \
-	| source-highlight --src-lang=haskell --out-format=esc
+	@cabal new-build ${NEW_BUILD_OPT} 2>&1 | source-highlight --src-lang=haskell --out-format=esc
+	@fswatcher --path .  --include "\.hs$$|\.cabal$$" --throttle 31 \
+	 cabal new-build -- ${NEW_BUILD_OPT} 2>&1 \
+	 | source-highlight --src-lang=haskell --out-format=esc
 
 dev-ghcid: clean ## build continuously using ghcid
 	@ghcid --command="cabal new-repl -fwarn-unused-binds -fwarn-unused-imports -fwarn-orphans" \
