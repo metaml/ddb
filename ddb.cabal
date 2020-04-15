@@ -1,11 +1,11 @@
-cabal-version:        2.4
+cabal-version:        3.0
 name:                 ddb
 version:              0.1.0.0
 license:              BSD-3-Clause
 license-file:         LICENSE
-author:               delivery group | earnestresearch.com
-maintainer:           mlee@earnestresearch.com
-category:             aws
+author:               M. Lee
+maintainer:           metaml@gmail.com
+category:             application
 extra-source-files:   CHANGELOG.md
 
 library
@@ -40,12 +40,9 @@ library
                     , TypeOperators
                     , TypeFamilies
                     , TypeSynonymInstances
-  build-depends:      base ^>= 4.12.0.0
+  build-depends:      base ^>= 4.13.0.0
                     , aeson
                     , attoparsec
-                    , beam-core
-                    , beam-migrate
-                    , beam-postgres
                     , case-insensitive
                     , co-log-polysemy
                     , conduit
@@ -55,14 +52,15 @@ library
                     , errors
                     , free
                     , generic-lens
-                    , hashable == 1.2.7.0
                     , http-client
                     , http-media
                     , http-types
                     , polysemy
                     , polysemy-plugin
-                    , postgresql-simple
                     , postgresql-simple-migration
+                    , selda
+                    , selda-json
+                    , selda-postgresql
                     , servant
                     , servant-client
                     , servant-client-core
@@ -70,6 +68,7 @@ library
                     , split
                     , text
                     , text-conversions
+                    , text-manipulate
                     , time
                     , unordered-containers
                     , uuid
@@ -80,8 +79,6 @@ executable ddb
   main-is:          ddb.hs
   hs-source-dirs:   app
   ghc-options:      -Wall -O2 -flate-specialise -fspecialise-aggressively
-  if os(linux)
-    ld-options:     -static -pthread
   default-language: Haskell2010
-  build-depends:    base ^>=4.12.0.0
+  build-depends:    base ^>=4.13.0.0
                   , ddb

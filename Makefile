@@ -47,19 +47,19 @@ help: ## help
 
 init: ## initialize project
 	${MAKE} -f etc/init.mk init
-	[ -e "/usr/local/var/postgres" ] || ${MAKE} -f etc/db.mk init
+	${MAKE} -f etc/db.mk init
 
 update: ## update project depedencies
 	${MAKE} -f etc/init.mk install-pkgs
 
 SCHEMA=schema
 
-migrate: CONNECTION="host=localhost dbname=log user=log"
+migrate: CONNECTION="host=localhost dbname=ddb user=ddb"
 migrate: ## update DB schema
 	migrate init $(CONNECTION)
 	migrate migrate $(CONNECTION) $(SCHEMA)
 
-migrate-test: CONNECTION="host=localhost dbname=log_test user=log"
+migrate-test: CONNECTION="host=localhost dbname=ddb_test user=ddb"
 migrate-test: ## update test-DB schema
 	migrate init $(CONNECTION)
 	migrate migrate $(CONNECTION) $(SCHEMA)

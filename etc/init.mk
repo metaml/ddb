@@ -1,6 +1,6 @@
 .DEFAULT_GOAL = help
 
-GHC_VERSION = 8.6.5
+GHC_VERSION ?= 8.8.3
 
 export SHELL = /bin/bash
 export PATH = ${HOME}/.cabal/bin:${HOME}/.ghcup/bin:/usr/local/bin:/usr/bin:/bin
@@ -17,22 +17,29 @@ install-ghc: ## install ghc
 	ghcup set $(GHC_VERSION)
 	ghcup install-cabal
 
-install-pkgs: cabal-update ## install hackage binaries
-	cabal new-install ${NEW_INSTALL_OPT} cabal-install Cabal
-	cabal new-install ${NEW_INSTALL_OPT} alex happy
-	cabal new-install ${NEW_INSTALL_OPT} fswatcher ghcid hlint
-	cabal new-install ${NEW_INSTALL_OPT} postgresql-simple-migration
+install-pkgs: ## install hackage binaries
+	cabal v2-install ${NEW_INSTALL_OPT} alex happy
+	cabal v2-install ${NEW_INSTALL_OPT} fswatcher
+	cabal v2-install ${NEW_INSTALL_OPT} ghcid
+	cabal v2-install --overwrite-policy=always hlint
+	cabal v2-install ${NEW_INSTALL_OPT} postgresql-simple-migration
 
-install-ghcup-deps: ## install ghcup dependencies
-	brew update
-	brew upgrade
-	brew install curl coreutils gcc@8 gmp make ncurses python3 source-highlight xz
-	- brew unlink gcc@7
-	brew unlink gcc@8 && brew link gcc@8
+install-ghcup-deps: ## install ghcup dependencies--@todo: use nix
+	sudo apt update -y
+	sudo apt upgrade -y
+	for i in libpq-dev libc-bin curl coreutils gcc libgmp-dev libnuma-dev libtinfo-dev zlib1g-dev xz-utils zip; do \
+		sudo apt install -y $$i; \
+	done
+	# brew update
+	# brew upgrade
+	# brew install curl coreutils gcc@8 gmp make ncurses python3 source-highlight xz
+	# - brew unlink gcc@7
+	# brew unlink gcc@8 && brew link gcc@8
 
 cabal-update: ## cabal update
-	cabal new-update
-	cabal new-install ${NEW_INSTALL_OPT} Cabal cabal-install
+	cabal v2-update
+	cabal v2-install ${NEW_INSTALL_OPT} --lib Cabal
+	cabal v2-install ${NEW_INSTALL_OPT} cabal-install
 
 cabal-config: ## user cabal config
 	cabal user-config update

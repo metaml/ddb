@@ -3,7 +3,7 @@
 export SHELL = /bin/bash
 export PATH = /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
-DB ?= log
+DB ?= ddb
 
 init: ## all targets
 init: install create extension stop sleep start
@@ -11,32 +11,48 @@ init: install create extension stop sleep start
 create: ## create test database
 create: init-db start sleep create-db
 
-start: ## start postgresql
-	pgrep -i postgres || ( pg_ctl start -D /usr/local/var/postgres | tee /tmp/$@.log ) &
+install: deps add-docker-gpg-key add-repo ## instal desiderata
+	sudo apt update -y
+	sudo apt install -y docker-ce docker-ce-cli containerd.io
 
-stop: ## stop postgresql
-	pg_ctl stop -D /usr/local/var/postgres
+deps: ## install dependendencies
+	for i in apt-transport-https ca-certificates curl gnupg-agent software-properties-common; do \
+		sudo apt install -y $$I; \
+	done
 
+add-docker-gpg-key: ## add GPG key
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
-install: ## install postgresql
-	brew update
-	brew install openssl readline postgresql
-	brew link --overwrite postgresql
+add-repo: ## add docker repo
+	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $$(lsb_release -cs) stable"
 
-init-db: ## init DB
-	initdb /usr/local/var/postgres -E utf8 --auth-local trust
+# docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+run: ## run a postgresql server
+	docker run --detach --network=host --name ddb \
+		--env DB_DBNAME=ddb \
+		--env DB_PORT=5432 \
+		--env DB_USER=ddb \
+		--env DB_PASS=ddb \
+		--env DB_HOST=127.0.0.1 \
+		--env POSTGRES_PASSWORD=ddb \
+		postgres
+
+psql: ## connect to posgresql docker instance
+	psql -hlocalhost -Upostgres postgres
+
+clean: ## clean up docker
+	- docker stop $$(docker ps --quiet)
+	- docker rm $$(docker ps --all --quiet)
 
 create-db: ## create roles and DBs
-	- createuser --superuser --createrole --createdb --echo postgres
-	- createuser --superuser --createrole --createdb --echo ${DB}
-	createdb --owner=postgres --encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8 ${DB}
-	createdb --owner=postgres --encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8 ${DB}_test
+	- createuser --host=localhost --username=postgres --superuser --createrole --createdb --echo ${DB}
+	createdb --host=localhost --username=postgres --owner=postgres --encoding=utf8 --lc-collate=en_US.utf8 --lc-ctype=en_US.utf8 ${DB}
+	createdb --host=localhost --username=postgres --owner=postgres --encoding=utf8 --lc-collate=en_US.utf8 --lc-ctype=en_US.utf8 ${DB}_test
 
-EXTENSIONS = uuid-ossp fuzzystrmatch pg_trgm
 extension: ## apply DB extensions
-	for i in ${EXTENSIONS}; do \
-		psql -Upostgres ${DB}      --command "create extension if not exists \"$${i}\""; \
-		psql -Upostgres ${DB}_test --command "create extension if not exists \"$${i}\""; \
+	for i in uuid-ossp fuzzystrmatch pg_trgm; do \
+		psql -hlocalhost -Upostgres ${DB}      --command "create extension if not exists \"$${i}\""; \
+		psql -hlocalhost -Upostgres ${DB}_test --command "create extension if not exists \"$${i}\""; \
 	done
 
 clobber: ## kill postgresql and delete dir

@@ -10,7 +10,7 @@ init: install-ghcup-deps install-ghcup install-ghc install-pkgs ## install proje
 
 install-ghcup-deps: ## install ghcup dependencies
 	apt-get update -y
-	apt-get install -y libc-bin curl coreutils gcc libgmp-dev libnuma-dev libtinfo-dev zlib1g-dev xz-utils zip
+apt-get install -y libc-bin curl coreutils gcc libgmp-dev libnuma-dev libtinfo-dev zlib1g-dev xz-utils zip
 
 install-ghcup: ## install ghcup
 	curl https://raw.githubusercontent.com/haskell/ghcup/master/bootstrap-haskell -sSf | sh
